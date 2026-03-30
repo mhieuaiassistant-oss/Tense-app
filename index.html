@@ -4,234 +4,234 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TenseMaster - Học 3 thì hiện tại</title>
+    
+    <!-- Thư viện hỗ trợ -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #FFFBEB; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(245, 158, 11, 0.15); }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div class="flex items-center justify-center min-h-screen">
+            <p class="text-amber-600 font-bold animate-pulse">Đang nạp dữ liệu và tính năng ôn tập...</p>
+        </div>
+    </div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
+        const { useState, useEffect } = React;
 
-        // --- Icons (SVG trực tiếp để tránh lỗi thư viện) ---
+        // Biểu tượng SVG trực tiếp
         const Icons = {
-            BookOpen: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
-            Volume2: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>,
-            VolumeX: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>,
-            Home: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-            ChevronRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>,
-            History: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>,
-            Trophy: () => <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
-            Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
-            X: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="9" x2="18" y2="18"/></svg>
+            Book: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>,
+            Home: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>,
+            ChevronRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>,
+            Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>,
+            X: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
+            Trophy: () => <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>,
+            History: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg>
         };
 
-        // --- Dữ liệu câu hỏi ---
         const tests = [
-            {
-                id: 'test-1',
-                title: 'Đề 1: Kiến thức căn bản & Dấu hiệu',
-                description: 'Tập trung vào các dấu hiệu nhận biết cơ bản của 3 thì hiện tại.',
-                questions: [
-                    { id: '1-1', text: 'I (play) __________ football every Saturday.', correctAnswer: 'play', explanation: 'Dấu hiệu "every Saturday" chỉ thói quen, dùng Hiện tại đơn.', type: 'choice', options: ['play', 'plays', 'am playing'] },
-                    { id: '1-2', text: 'She (have) __________ a pen.', correctAnswer: 'has', explanation: 'Chủ ngữ "She" số ít, động từ "have" chuyển thành "has".', type: 'choice', options: ['have', 'has', 'is having'] },
-                    { id: '1-3', text: '(you / like) __________ chocolate?', correctAnswer: 'Do you like', explanation: 'Câu hỏi sở thích ở Hiện tại đơn, mượn trợ động từ "Do".', type: 'choice', options: ['Do you like', 'Does you like', 'Are you liking'] },
-                    { id: '1-4', text: 'Look! The bus (come) __________.', correctAnswer: 'is coming', explanation: 'Dấu hiệu "Look!" báo hiệu hành động đang diễn ra.', type: 'choice', options: ['comes', 'is coming', 'has come'] },
-                    { id: '1-5', text: 'Listen! Someone (sing) __________ in the bathroom.', correctAnswer: 'is singing', explanation: 'Dấu hiệu "Listen!" báo hiệu hành động đang diễn ra.', type: 'choice', options: ['sings', 'is singing', 'has sung'] },
-                    { id: '1-6', text: 'She (not / study) __________ at the moment; she is watching TV.', correctAnswer: 'is not studying', explanation: 'Dấu hiệu "at the moment" dùng Hiện tại tiếp diễn phủ định.', type: 'choice', options: ['does not study', 'is not studying', 'has not studied'] },
-                    { id: '1-7', text: 'The sun (set) __________ in the West.', correctAnswer: 'sets', explanation: 'Sự thật hiển nhiên luôn đúng, dùng Hiện tại đơn.', type: 'choice', options: ['set', 'sets', 'is setting'] },
-                    { id: '1-8', text: 'Water (boil) __________ at 100 degrees Celsius.', correctAnswer: 'boils', explanation: 'Sự thật vật lý, dùng Hiện tại đơn.', type: 'choice', options: ['boil', 'boils', 'is boiling'] },
-                    { id: '1-9', text: 'I (see) __________ the new bridge.', correctAnswer: 'have seen', explanation: 'Thì Hiện tại hoàn thành diễn tả hành động vừa xảy ra.', type: 'choice', options: ['see', 'am seeing', 'have seen'] },
-                    { id: '1-10', text: '(you / ever / eat) __________ Sushi?', correctAnswer: 'Have you ever eaten', explanation: 'Hỏi về trải nghiệm (đã từng chưa), dùng Hiện tại hoàn thành.', type: 'choice', options: ['Do you ever eat', 'Are you ever eating', 'Have you ever eaten'] },
-                    { id: '1-11', text: 'They (lose) __________ their keys.', correctAnswer: 'have lost', explanation: '"They" số nhiều đi với "have", diễn tả sự việc vừa mới xảy ra.', type: 'fill' },
-                    { id: '1-12', text: 'Bo (drive) __________ Rose to work today.', correctAnswer: 'has driven', explanation: '"Bo" số ít đi với "has", diễn tả việc xảy ra trong ngày "today".', type: 'fill' },
-                    { id: '1-13', text: 'I (not / hear) __________ from you for ages.', correctAnswer: 'haven’t heard', explanation: 'Dấu hiệu "for ages" (đã lâu lắm rồi) dùng Hiện tại hoàn thành.', type: 'fill' },
-                    { id: '1-14', text: 'My mother often (teach) __________ me English on Saturday evenings.', correctAnswer: 'teaches', explanation: 'Dấu hiệu "often" chỉ thói quen, chủ ngữ số ít thêm "es".', type: 'fill' },
-                    { id: '1-15', text: 'The cat (not / like) __________ me.', correctAnswer: 'doesn’t like', explanation: 'Câu phủ định Hiện tại đơn, "The cat" số ít mượn "doesn\'t".', type: 'fill' },
-                    { id: '1-16', text: 'How many books / Bob / read?', correctAnswer: 'Has Bob read?', explanation: 'Câu hỏi Hiện tại hoàn thành: Have/Has + S + V3?.', type: 'fill' },
-                    { id: '1-17', text: 'Look! It (snow) __________ outside.', correctAnswer: 'is snowing', explanation: 'Dấu hiệu "Look!" bắt buộc dùng Hiện tại tiếp diễn.', type: 'fill' },
-                    { id: '1-18', text: 'I (not / work) __________ today.', correctAnswer: 'have not worked', explanation: 'Hiện tại hoàn thành diễn tả hành động trong ngày chưa xong.', type: 'fill' },
-                    { id: '1-19', text: 'She (not / come) __________ here for a long time.', correctAnswer: "hasn't come", explanation: 'Dấu hiệu "for a long time" dùng Hiện tại hoàn thành.', type: 'fill' },
-                    { id: '1-20', text: 'Where (be / you)?', correctAnswer: 'Have you been', explanation: 'Câu hỏi nơi chốn (đã ở đâu) ở Hiện tại hoàn thành.', type: 'fill' }
-                ]
-            },
-            {
-                id: 'test-2',
-                title: 'Đề 2: Phân biệt các thì Hiện tại',
-                description: 'Tập trung vào việc lựa chọn thì đúng dựa trên ngữ cảnh cụ thể.',
-                questions: [
-                    { id: '2-1', text: 'My brother (finish) __________ work at 8 p.m.', correctAnswer: 'finishes', explanation: 'Thói quen hàng ngày, chủ ngữ số ít thêm "es".', type: 'choice', options: ['finish', 'finishes', 'is finishing'] },
-                    { id: '2-2', text: 'We (go) __________ to the cinema every Sunday.', correctAnswer: 'go', explanation: 'Dấu hiệu "every Sunday", Hiện tại đơn đi với chủ ngữ "We".', type: 'choice', options: ['go', 'goes', 'are going'] },
-                    { id: '2-3', text: 'Be quiet! The baby (sleep) __________.', correctAnswer: 'is sleeping', explanation: 'Dấu hiệu "Be quiet!" chỉ hành động đang diễn ra.', type: 'choice', options: ['sleeps', 'is sleeping', 'has slept'] },
-                    { id: '2-4', text: '(he / drive) __________ to work every day?', correctAnswer: 'Does he drive', explanation: 'Câu hỏi "every day", dùng Hiện tại đơn mượn "Does".', type: 'choice', options: ['Does he drive', 'Is he driving', 'Has he driven'] },
-                    { id: '2-5', text: 'It (not / rain) __________ now, so we can go out.', correctAnswer: 'is not raining', explanation: 'Dấu hiệu "now", dùng Hiện tại tiếp diễn phủ định.', type: 'choice', options: ['doesn\'t rain', 'is not raining', 'has not rained'] },
-                    { id: '2-6', text: 'Normally I (wear) __________ glasses, but now I (wear) __________ contact lenses.', correctAnswer: 'wear / am wearing', explanation: '"Normally" (thói quen - HT đơn) vs "now" (tạm thời - HT tiếp diễn).', type: 'choice', options: ['wear / wear', 'wear / am wearing', 'am wearing / wear'] },
-                    { id: '2-7', text: 'My sister (wash) __________ the dishes every day.', correctAnswer: 'washes', explanation: 'Dấu hiệu "every day", thói quen ở Hiện tại đơn.', type: 'choice', options: ['wash', 'washes', 'is washing'] },
-                    { id: '2-8', text: 'What (you / do) __________ right now?', correctAnswer: 'are you doing', explanation: 'Dấu hiệu "right now" dùng câu hỏi Hiện tại tiếp diễn.', type: 'choice', options: ['do you do', 'are you doing', 'have you done'] },
-                    { id: '2-9', text: 'They (leave) __________ London this month.', correctAnswer: 'have left', explanation: 'Sự việc xảy ra trong tháng này "this month".', type: 'choice', options: ['leave', 'are leaving', 'have left'] },
-                    { id: '2-10', text: 'Jenny (lock) __________ the door?', correctAnswer: 'Has Jenny locked', explanation: 'Câu hỏi Hiện tại hoàn thành: Has + S + V3?.', type: 'choice', options: ['Does Jenny lock', 'Is Jenny locking', 'Has Jenny locked'] },
-                    { id: '2-11', text: 'Walter (call) __________ us?', correctAnswer: 'Has Walter called', explanation: 'Câu hỏi Hiện tại hoàn thành cho chủ ngữ số ít.', type: 'fill' },
-                    { id: '2-12', text: 'He (be) __________ to England.', correctAnswer: 'has been', explanation: 'Diễn tả trải nghiệm đã từng đến nơi nào đó.', type: 'fill' },
-                    { id: '2-13', text: 'I (forget) __________ your name.', correctAnswer: 'have forgotten', explanation: 'Kết quả của hành động kéo dài đến hiện tại (không nhớ tên).', type: 'fill' },
-                    { id: '2-14', text: 'School (not / start) __________ yet.', correctAnswer: "hasn't started", explanation: 'Dấu hiệu "yet" dùng trong câu phủ định Hiện tại hoàn thành.', type: 'fill' },
-                    { id: '2-15', text: '(speak / he) __________ to his boss?', correctAnswer: 'Has he spoken', explanation: 'Câu hỏi về hành động vừa mới xảy ra hoặc chưa xảy ra.', type: 'fill' },
-                    { id: '2-16', text: 'The last time we met was 2 years ago. -> We haven’t __________.', correctAnswer: 'met for 2 years', explanation: 'Chuyển từ Quá khứ đơn sang Hiện tại hoàn thành phủ định + for.', type: 'fill' },
-                    { id: '2-17', text: 'He started working as a teacher 6 months ago. -> He has __________.', correctAnswer: 'worked as a teacher for 6 months', explanation: 'Chuyển mốc thời gian "ago" sang khoảng thời gian "for".', type: 'fill' },
-                    { id: '2-18', text: 'Mary / visit / his grandparents.', correctAnswer: 'Mary has visited...', explanation: 'Cấu trúc khẳng định: S + have/has + V3.', type: 'fill' },
-                    { id: '2-19', text: 'Sửa lỗi: Jinho have lost his key.', correctAnswer: 'has', explanation: 'Chủ ngữ "Jinho" số ít nên dùng trợ động từ "has".', type: 'fill' },
-                    { id: '2-20', text: 'Sửa lỗi: I am not believing his story.', correctAnswer: 'do not believe', explanation: '"Believe" là động từ trạng thái, không dùng ở tiếp diễn.', type: 'fill' }
-                ]
-            },
-            {
-                id: 'test-3',
-                title: 'Đề 3: Tổng hợp & Nâng cao',
-                description: 'Bài kiểm tra tổng hợp kiến thức từ cả 3 thì hiện tại.',
-                questions: [
-                    { id: '3-1', text: 'Police (catch) __________ robbers.', correctAnswer: 'catch', explanation: 'Chủ ngữ "Police" (Cảnh sát) được coi là số nhiều trong ngữ cảnh này.', type: 'choice', options: ['catch', 'catches', 'are catching'] },
-                    { id: '3-2', text: 'My dad (work) __________ in a bank, but today he is at home.', correctAnswer: 'works', explanation: 'Sự thật về nghề nghiệp ổn định, dùng Hiện tại đơn.', type: 'choice', options: ['work', 'works', 'is working'] },
-                    { id: '3-3', text: '(your parents / watch) __________ TV in the evening usually?', correctAnswer: 'Do your parents watch', explanation: 'Câu hỏi thói quen "usually", dùng Hiện tại đơn.', type: 'choice', options: ['Do your parents watch', 'Does your parents watch', 'Are your parents watching'] },
-                    { id: '3-4', text: 'I (read) __________ a very interesting book right now.', correctAnswer: 'am reading', explanation: 'Dấu hiệu "right now", hành động đang diễn ra.', type: 'choice', options: ['read', 'am reading', 'have read'] },
-                    { id: '3-5', text: 'I (not / know) __________ the answer to this question.', correctAnswer: 'do not know', explanation: '"Know" là động từ trạng thái, chỉ dùng Hiện tại đơn.', type: 'choice', options: ['do not know', 'am not knowing', 'have not known'] },
-                    { id: '3-6', text: 'How often __________ to the gym?', correctAnswer: 'do you go', explanation: '"How often" hỏi tần suất, dùng Hiện tại đơn.', type: 'choice', options: ['do you go', 'are you going', 'have you gone'] },
-                    { id: '3-7', text: 'The Earth __________ around the Sun.', correctAnswer: 'goes', explanation: 'Sự thật hiển nhiên trong vũ trụ, dùng Hiện tại đơn.', type: 'choice', options: ['is going', 'goes', 'has gone'] },
-                    { id: '3-8', text: '(she / be) __________ a singer?', correctAnswer: 'Is she', explanation: 'Câu hỏi với động từ To be ở Hiện tại đơn.', type: 'choice', options: ['Is she', 'Does she', 'Has she'] },
-                    { id: '3-9', text: 'My life __________ so boring. I just watch TV every night.', correctAnswer: 'is', explanation: 'Miêu tả trạng thái hiện tại, dùng Hiện tại đơn của To be.', type: 'choice', options: ['is', 'am', 'are'] },
-                    { id: '3-10', text: 'They (not / plan) __________ our holiday yet.', correctAnswer: 'have not planned', explanation: 'Dấu hiệu "yet", dùng Hiện tại hoàn thành phủ định.', type: 'choice', options: ['do not plan', 'are not planning', 'have not planned'] },
-                    { id: '3-11', text: 'I’m afraid he has __________ gone out.', correctAnswer: 'just', explanation: '"Just" dùng để chỉ hành động vừa mới xảy ra.', type: 'fill' },
-                    { id: '3-12', text: 'I haven’t finished __________.', correctAnswer: 'yet', explanation: '"Yet" thường đứng cuối câu phủ định để chỉ việc chưa xong.', type: 'fill' },
-                    { id: '3-13', text: 'I’ve __________ done it.', correctAnswer: 'already', explanation: '"Already" dùng để nhấn mạnh việc đã hoàn thành rồi.', type: 'fill' },
-                    { id: '3-14', text: 'Have you __________ been to New York?', correctAnswer: 'ever', explanation: '"Ever" dùng trong câu hỏi về trải nghiệm "đã từng chưa".', type: 'fill' },
-                    { id: '3-15', text: 'She (not / receive) __________ any good news for a long time.', correctAnswer: "hasn't received", explanation: 'Dấu hiệu "for a long time" dùng Hiện tại hoàn thành.', type: 'fill' },
-                    { id: '3-16', text: 'What is your job? -> What __________ you __________?', correctAnswer: 'do you do', explanation: 'Cách hỏi nghề nghiệp tương đương "What is your job?".', type: 'fill' },
-                    { id: '3-17', text: 'It is her habit to check emails before breakfast.', correctAnswer: 'She usually checks...', explanation: '"Habit" (thói quen) thay bằng trạng từ "usually" + HT đơn.', type: 'fill' },
-                    { id: '3-18', text: 'This is the first time I had such an exciting trip. -> I have never __________.', correctAnswer: 'never had such...', explanation: 'Cấu trúc: This is the first time... = I have never... before.', type: 'fill' },
-                    { id: '3-19', text: 'Sửa lỗi: The lesson haven’t started yet.', correctAnswer: "hasn't", explanation: '"The lesson" là danh từ số ít, dùng "hasn\'t".', type: 'fill' },
-                    { id: '3-20', text: 'Sửa lỗi: Does she working here?', correctAnswer: 'Is', explanation: 'Vì có đuôi "-ing" (working) nên phải dùng To be "Is"', type: 'fill' }
-                ]
-            }
+          {
+            id: 'test-1',
+            title: 'ĐỀ THI SỐ 1: KIẾN THỨC CĂN BẢN',
+            description: 'Tập trung vào các dấu hiệu nhận biết cơ bản của 3 thì hiện tại.',
+            questions: [
+              { id: '1-1', text: 'I (play) __________ football every Saturday.', correctAnswer: 'play', explanation: 'Dấu hiệu "every Saturday" chỉ thói quen, dùng Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['play', 'plays', 'am playing'] },
+              { id: '1-2', text: 'She (have) __________ a pen.', correctAnswer: 'has', explanation: 'Chủ ngữ "She" số ít, động từ "have" chuyển thành "has".', tense: 'Hiện tại đơn', type: 'choice', options: ['have', 'has', 'is having'] },
+              { id: '1-3', text: '(you / like) __________ chocolate?', correctAnswer: 'Do you like', explanation: 'Câu hỏi sở thích ở Hiện tại đơn, mượn trợ động từ "Do".', tense: 'Hiện tại đơn', type: 'choice', options: ['Do you like', 'Does you like', 'Are you liking'] },
+              { id: '1-4', text: 'Look! The bus (come) __________.', correctAnswer: 'is coming', explanation: 'Dấu hiệu "Look!" báo hiệu hành động đang diễn ra.', tense: 'Hiện tại tiếp diễn', type: 'choice', options: ['comes', 'is coming', 'has come'] },
+              { id: '1-5', text: 'Listen! Someone (sing) __________ in the bathroom.', correctAnswer: 'is singing', explanation: 'Dấu hiệu "Listen!" báo hiệu hành động đang diễn ra.', tense: 'Hiện tại tiếp diễn', type: 'choice', options: ['sings', 'is singing', 'has sung'] },
+              { id: '1-6', text: 'She (not / study) __________ at the moment; she is watching TV.', correctAnswer: 'is not studying', explanation: 'Dấu hiệu "at the moment" dùng Hiện tại tiếp diễn phủ định.', tense: 'Hiện tại tiếp diễn', type: 'choice', options: ['does not study', 'is not studying', 'has not studied'] },
+              { id: '1-7', text: 'The sun (set) __________ in the West.', correctAnswer: 'sets', explanation: 'Sự thật hiển nhiên luôn đúng, dùng Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['set', 'sets', 'is setting'] },
+              { id: '1-8', text: 'Water (boil) __________ at 100 degrees Celsius.', correctAnswer: 'boils', explanation: 'Sự thật vật lý, dùng Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['boil', 'boils', 'is boiling'] },
+              { id: '1-9', text: 'I (see) __________ the new bridge.', correctAnswer: 'have seen', explanation: 'Thì Hiện tại hoàn thành diễn tả hành động vừa xảy ra.', tense: 'Hiện tại hoàn thành', type: 'choice', options: ['see', 'am seeing', 'have seen'] },
+              { id: '1-10', text: '(you / ever / eat) __________ Sushi?', correctAnswer: 'Have you ever eaten', explanation: 'Hỏi về trải nghiệm (đã từng chưa), dùng Hiện tại hoàn thành.', tense: 'Hiện tại hoàn thành', type: 'choice', options: ['Do you ever eat', 'Are you ever eating', 'Have you ever eaten'] },
+              { id: '1-11', text: 'They (lose) __________ their keys.', correctAnswer: 'have lost', explanation: '"They" số nhiều đi với "have", diễn tả sự việc vừa mới xảy ra.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '1-12', text: 'Bo (drive) __________ Rose to work today.', correctAnswer: 'has driven', explanation: '"Bo" số ít đi với "has", diễn tả việc xảy ra trong ngày "today".', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '1-13', text: 'I (not / hear) __________ from you for ages.', correctAnswer: 'haven’t heard', explanation: 'Dấu hiệu "for ages" (đã lâu lắm rồi) dùng Hiện tại hoàn thành.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '1-14', text: 'My mother often (teach) __________ me English on Saturday evenings.', correctAnswer: 'teaches', explanation: 'Dấu hiệu "often" chỉ thói quen, chủ ngữ số ít thêm "es".', tense: 'Hiện tại đơn', type: 'fill' },
+              { id: '1-15', text: 'The cat (not / like) __________ me.', correctAnswer: 'doesn’t like', explanation: 'Câu phủ định Hiện tại đơn, "The cat" số ít mượn "doesn\'t".', tense: 'Hiện tại đơn', type: 'fill' },
+              { id: '1-16', text: 'How many books / Bob / read? (Hiện tại hoàn thành)', correctAnswer: 'Has Bob read?', explanation: 'Câu hỏi Hiện tại hoàn thành: Have/Has + S + V3?.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '1-17', text: 'Look! It (snow) __________ outside.', correctAnswer: 'is snowing', explanation: 'Dấu hiệu "Look!" bắt buộc dùng Hiện tại tiếp diễn.', tense: 'Hiện tại tiếp diễn', type: 'fill' },
+              { id: '1-18', text: 'I (not / work) __________ today. (Hiện tại hoàn thành)', correctAnswer: 'have not worked', explanation: 'Hiện tại hoàn thành diễn tả hành động trong ngày chưa xong.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '1-19', text: 'She (not / come) __________ here for a long time.', correctAnswer: "hasn't come", explanation: 'Dấu hiệu "for a long time" dùng Hiện tại hoàn thành.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '1-20', text: 'Where (be / you)? (Hiện tại hoàn thành)', correctAnswer: 'Have you been', explanation: 'Câu hỏi nơi chốn (đã ở đâu) ở Hiện tại hoàn thành.', tense: 'Hiện tại hoàn thành', type: 'fill' }
+            ]
+          },
+          {
+            id: 'test-2',
+            title: 'ĐỀ THI SỐ 2: PHÂN BIỆT CÁC THÌ HIỆN TẠI',
+            description: 'Tập trung vào việc lựa chọn thì đúng dựa trên ngữ cảnh cụ thể.',
+            questions: [
+              { id: '2-1', text: 'My brother (finish) __________ work at 8 p.m.', correctAnswer: 'finishes', explanation: 'Thói quen hàng ngày, chủ ngữ số ít thêm "es".', tense: 'Hiện tại đơn', type: 'choice', options: ['finish', 'finishes', 'is finishing'] },
+              { id: '2-2', text: 'We (go) __________ to the cinema every Sunday.', correctAnswer: 'go', explanation: 'Dấu hiệu "every Sunday", Hiện tại đơn đi với chủ ngữ "We".', tense: 'Hiện tại đơn', type: 'choice', options: ['go', 'goes', 'are going'] },
+              { id: '2-3', text: 'Be quiet! The baby (sleep) __________.', correctAnswer: 'is sleeping', explanation: 'Dấu hiệu "Be quiet!" chỉ hành động đang diễn ra.', tense: 'Hiện tại tiếp diễn', type: 'choice', options: ['sleeps', 'is sleeping', 'has slept'] },
+              { id: '2-4', text: '(he / drive) __________ to work every day?', correctAnswer: 'Does he drive', explanation: 'Câu hỏi "every day", dùng Hiện tại đơn mượn "Does".', tense: 'Hiện tại đơn', type: 'choice', options: ['Does he drive', 'Is he driving', 'Has he driven'] },
+              { id: '2-5', text: 'It (not / rain) __________ now, so we can go out.', correctAnswer: 'is not raining', explanation: 'Dấu hiệu "now", dùng Hiện tại tiếp diễn phủ định.', tense: 'Hiện tại tiếp diễn', type: 'choice', options: ['doesn\'t rain', 'is not raining', 'has not rained'] },
+              { id: '2-6', text: 'Normally I (wear) __________ glasses, but now I (wear) __________ contact lenses.', correctAnswer: 'wear / am wearing', explanation: '"Normally" (thói quen - HT đơn) vs "now" (tạm thời - HT tiếp diễn).', tense: 'Hiện tại tiếp diễn', type: 'choice', options: ['wear / wear', 'wear / am wearing', 'am wearing / wear'] },
+              { id: '2-7', text: 'My sister (wash) __________ the dishes every day.', correctAnswer: 'washes', explanation: 'Dấu hiệu "every day", thói quen ở Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['wash', 'washes', 'is washing'] },
+              { id: '2-8', text: 'What (you / do) __________ right now?', correctAnswer: 'are you doing', explanation: 'Dấu hiệu "right now" dùng câu hỏi Hiện tại tiếp diễn.', tense: 'Hiện tại tiếp diễn', type: 'choice', options: ['do you do', 'are you doing', 'have you done'] },
+              { id: '2-9', text: 'They (leave) __________ London this month.', correctAnswer: 'have left', explanation: 'Sự việc xảy ra trong tháng này "this month".', tense: 'Hiện tại hoàn thành', type: 'choice', options: ['leave', 'are leaving', 'have left'] },
+              { id: '2-10', text: 'Jenny (lock) __________ the door? (Hiện tại hoàn thành)', correctAnswer: 'Has Jenny locked', explanation: 'Câu hỏi Hiện tại hoàn thành: Has + S + V3?.', tense: 'Hiện tại hoàn thành', type: 'choice', options: ['Does Jenny lock', 'Is Jenny locking', 'Has Jenny locked'] },
+              { id: '2-11', text: 'Walter (call) __________ us? (Hiện tại hoàn thành)', correctAnswer: 'Has Walter called', explanation: 'Câu hỏi Hiện tại hoàn thành cho chủ ngữ số ít.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-12', text: 'He (be) __________ to England.', correctAnswer: 'has been', explanation: 'Diễn tả trải nghiệm đã từng đến nơi nào đó.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-13', text: 'I (forget) __________ your name.', correctAnswer: 'have forgotten', explanation: 'Kết quả của hành động kéo dài đến hiện tại.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-14', text: 'School (not / start) __________ yet.', correctAnswer: "hasn't started", explanation: 'Dấu hiệu "yet" dùng trong câu phủ định Hiện tại hoàn thành.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-15', text: '(speak / he) __________ to his boss? (Hiện tại hoàn thành)', correctAnswer: 'Has he spoken', explanation: 'Câu hỏi về hành động vừa mới xảy ra hoặc chưa xảy ra.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-16', text: 'The last time we met was 2 years ago. -> We haven’t _______________.', correctAnswer: 'met for 2 years', explanation: 'Chuyển từ Quá khứ đơn sang Hiện tại hoàn thành phủ định + for.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-17', text: 'He started working as a teacher 6 months ago. -> He has _______________.', correctAnswer: 'worked as a teacher for 6 months', explanation: 'Chuyển mốc thời gian "ago" sang khoảng thời gian "for".', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-18', text: 'Mary / visit / his grandparents. (Khẳng định Hiện tại hoàn thành)', correctAnswer: 'Mary has visited...', explanation: 'Cấu trúc khẳng định: S + have/has + V3.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-19', text: 'Sửa lỗi: Jinho have lost his key. He can’t find it anywhere.', correctAnswer: 'has', explanation: 'Chủ ngữ "Jinho" số ít nên dùng trợ động từ "has".', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '2-20', text: 'Sửa lỗi: I am not believing his story.', correctAnswer: 'do not believe', explanation: '"Believe" là động từ trạng thái, không dùng ở tiếp diễn.', tense: 'Hiện tại đơn', type: 'fill' }
+            ]
+          },
+          {
+            id: 'test-3',
+            title: 'ĐỀ THI SỐ 3: TỔNG HỢP VÀ NÂNG CAO',
+            description: 'Bài kiểm tra tổng hợp kiến thức từ cả 3 thì hiện tại.',
+            questions: [
+              { id: '3-1', text: 'Police (catch) __________ robbers.', correctAnswer: 'catch', explanation: 'Chủ ngữ "Police" (Cảnh sát) được coi là số nhiều trong ngữ cảnh này.', tense: 'Hiện tại đơn', type: 'choice', options: ['catch', 'catches', 'are catching'] },
+              { id: '3-2', text: 'My dad (work) __________ in a bank, but today he is at home.', correctAnswer: 'works', explanation: 'Sự thật về nghề nghiệp ổn định, dùng Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['work', 'works', 'is working'] },
+              { id: '3-3', text: '(your parents / watch) __________ TV in the evening usually?', correctAnswer: 'Do your parents watch', explanation: 'Câu hỏi thói quen "usually", dùng Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['Do your parents watch', 'Does your parents watch', 'Are your parents watching'] },
+              { id: '3-4', text: 'I (read) __________ a very interesting book right now.', correctAnswer: 'am reading', explanation: 'Dấu hiệu "right now", hành động đang diễn ra.', tense: 'Hiện tại tiếp diễn', type: 'choice', options: ['read', 'am reading', 'have read'] },
+              { id: '3-5', text: 'I (not / know) __________ the answer to this question.', correctAnswer: 'do not know', explanation: '"Know" là động từ trạng thái, chỉ dùng Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['do not know', 'am not knowing', 'have not known'] },
+              { id: '3-6', text: 'How often __________ to the gym? (A. do you go | B. are you going)', correctAnswer: 'do you go', explanation: '"How often" hỏi tần suất, dùng Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['do you go', 'are you going'] },
+              { id: '3-7', text: 'The Earth __________ around the Sun. (A. is going | B. goes)', correctAnswer: 'goes', explanation: 'Sự thật hiển nhiên trong vũ trụ, dùng Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['is going', 'goes'] },
+              { id: '3-8', text: '(she / be) __________ a singer?', correctAnswer: 'Is she', explanation: 'Câu hỏi với động từ To be ở Hiện tại đơn.', tense: 'Hiện tại đơn', type: 'choice', options: ['Is she', 'Does she', 'Has she'] },
+              { id: '3-9', text: 'My life __________ so boring. I just watch TV every night.', correctAnswer: 'is', explanation: 'Miêu tả trạng thái hiện tại, dùng Hiện tại đơn của To be.', tense: 'Hiện tại đơn', type: 'choice', options: ['is', 'am', 'are'] },
+              { id: '3-10', text: 'They (not / plan) __________ our holiday yet.', correctAnswer: 'have not planned', explanation: 'Dấu hiệu "yet", dùng Hiện tại hoàn thành phủ định.', tense: 'Hiện tại hoàn thành', type: 'choice', options: ['do not plan', 'are not planning', 'have not planned'] },
+              { id: '3-11', text: 'I’m afraid he has __________ gone out (just / yet / already).', correctAnswer: 'just', explanation: '"Just" dùng để chỉ hành động vừa mới xảy ra.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '3-12', text: 'I haven’t finished __________ (just / yet / already).', correctAnswer: 'yet', explanation: '"Yet" thường đứng cuối câu phủ định để chỉ việc chưa xong.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '3-13', text: 'I’ve __________ done it (just / yet / already).', correctAnswer: 'already', explanation: '"Already" dùng để nhấn mạnh việc đã hoàn thành rồi.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '3-14', text: 'Have you __________ been to New York? (ever / never)', correctAnswer: 'ever', explanation: '"Ever" dùng trong câu hỏi về trải nghiệm "đã từng chưa".', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '3-15', text: 'She (not / receive) __________ any good news for a long time.', correctAnswer: "hasn't received", explanation: 'Dấu hiệu "for a long time" dùng Hiện tại hoàn thành.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '3-16', text: 'What is your job? -> What __________ you __________?', correctAnswer: 'do you do', explanation: 'Cách hỏi nghề nghiệp tương đương "What is your job?".', tense: 'Hiện tại đơn', type: 'fill' },
+              { id: '3-17', text: 'It is her habit to check emails before breakfast. (Dùng usually)', correctAnswer: 'She usually checks...', explanation: '"Habit" (thói quen) thay bằng trạng từ "usually" + HT đơn.', tense: 'Hiện tại đơn', type: 'fill' },
+              { id: '3-18', text: 'This is the first time I had such an exciting trip. -> I have never __________.', correctAnswer: 'never had such...', explanation: 'Cấu trúc: This is the first time... = I have never... before.', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '3-19', text: 'Sửa lỗi: The lesson haven’t started yet.', correctAnswer: "hasn't", explanation: '"The lesson" là danh từ số ít, dùng "hasn\'t".', tense: 'Hiện tại hoàn thành', type: 'fill' },
+              { id: '3-20', text: 'Sửa lỗi: Does she working here?', correctAnswer: 'Is', explanation: 'Vì có đuôi "-ing" (working) nên phải dùng To be "Is"', tense: 'Hiện tại tiếp diễn', type: 'fill' }
+            ]
+          }
         ];
 
-        // --- App Logic ---
         function App() {
             const [view, setView] = useState('home');
             const [currentTest, setCurrentTest] = useState(null);
-            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-            const [userAnswer, setUserAnswer] = useState('');
+            const [currentIdx, setCurrentIdx] = useState(0);
+            const [answer, setAnswer] = useState('');
             const [isAnswered, setIsAnswered] = useState(false);
             const [isCorrect, setIsCorrect] = useState(null);
-            const [soundEnabled, setSoundEnabled] = useState(true);
-            const [sessionStats, setSessionStats] = useState({ correct: 0, wrong: 0 });
-            const [wrongQuestionIds, setWrongQuestionIds] = useState(() => {
+            const [stats, setStats] = useState({ correct: 0, wrong: 0 });
+            
+            // Quản lý câu sai
+            const [wrongIds, setWrongIds] = useState(() => {
                 const saved = localStorage.getItem('wrong_questions');
                 return saved ? JSON.parse(saved) : [];
             });
 
             useEffect(() => {
-                localStorage.setItem('wrong_questions', JSON.stringify(wrongQuestionIds));
-            }, [wrongQuestionIds]);
-
-            const playSound = (url) => {
-                if (!soundEnabled) return;
-                new Audio(url).play().catch(() => {});
-            };
+                localStorage.setItem('wrong_questions', JSON.stringify(wrongIds));
+            }, [wrongIds]);
 
             const startTest = (test) => {
                 setCurrentTest(test);
-                setCurrentQuestionIndex(0);
-                setUserAnswer('');
+                setCurrentIdx(0);
+                setAnswer('');
                 setIsAnswered(false);
-                setIsCorrect(null);
-                setSessionStats({ correct: 0, wrong: 0 });
+                setStats({ correct: 0, wrong: 0 });
                 setView('test');
             };
 
-            const startReviewTest = () => {
-                const allQuestions = tests.flatMap(t => t.questions);
-                const reviewQuestions = allQuestions.filter(q => wrongQuestionIds.includes(q.id));
-                if (reviewQuestions.length === 0) return;
-                startTest({ id: 'review', title: 'Ôn tập câu sai', description: 'Luyện tập lại các câu chưa đúng.', questions: reviewQuestions });
+            const startReview = () => {
+                const allQs = tests.flatMap(t => t.questions);
+                const reviewQs = allQs.filter(q => wrongIds.includes(q.id));
+                if (reviewQs.length === 0) return;
+                startTest({
+                    id: 'review',
+                    title: 'ÔN TẬP CÁC CÂU SAI',
+                    description: 'Luyện tập lại những câu bạn đã từng làm chưa đúng.',
+                    questions: reviewQs
+                });
             };
 
             const normalize = (s) => s.trim().toLowerCase().replace(/[’‘´`]/g, "'").replace(/\s+/g, ' ');
 
-            const check = (u, c) => {
-                const nu = normalize(u);
-                const nc = normalize(c);
-                if (nu === nc) return true;
-                const contractions = { "doesn't": "does not", "don't": "do not", "isn't": "is not", "aren't": "are not", "haven't": "have not", "hasn't": "has not" };
-                let eu = nu, ec = nc;
-                Object.entries(contractions).forEach(([s, l]) => { eu = eu.replace(s, l); ec = ec.replace(s, l); });
-                return eu === ec;
-            };
-
-            const handleAnswer = () => {
+            const handleCheck = () => {
                 if (isAnswered) return;
-                const q = currentTest.questions[currentQuestionIndex];
-                const correct = check(userAnswer, q.correctAnswer);
+                const q = currentTest.questions[currentIdx];
+                const u = normalize(answer);
+                const c = normalize(q.correctAnswer);
+                const correct = u === c;
+                
                 setIsCorrect(correct);
                 setIsAnswered(true);
+
                 if (correct) {
-                    playSound('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
-                    setSessionStats(s => ({ ...s, correct: s.correct + 1 }));
+                    setStats(p => ({ ...p, correct: p.correct + 1 }));
                     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                    setWrongQuestionIds(ids => ids.filter(id => id !== q.id));
+                    // Xóa khỏi danh sách sai nếu làm đúng
+                    setWrongIds(prev => prev.filter(id => id !== q.id));
                 } else {
-                    playSound('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
-                    setSessionStats(s => ({ ...s, wrong: s.wrong + 1 }));
-                    if (!wrongQuestionIds.includes(q.id)) setWrongQuestionIds(ids => [...ids, q.id]);
+                    setStats(p => ({ ...p, wrong: p.wrong + 1 }));
+                    // Thêm vào danh sách sai
+                    if (!wrongIds.includes(q.id)) setWrongIds(prev => [...prev, q.id]);
                 }
             };
 
+            const next = () => {
+                if (currentIdx < currentTest.questions.length - 1) {
+                    setCurrentIdx(p => p + 1);
+                    setAnswer(''); setIsAnswered(false);
+                } else { setView('result'); }
+            };
+
             return (
-                <div className="min-h-screen">
-                    <header className="glass sticky top-0 z-50 border-b border-amber-100 p-4 flex justify-between items-center">
+                <div className="min-h-screen p-4 md:p-8">
+                    <header className="max-w-2xl mx-auto mb-8 flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
                         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('home')}>
-                            <div className="bg-amber-400 p-2 rounded-xl shadow-sm"><Icons.BookOpen /></div>
-                            <h1 className="font-bold text-lg text-amber-900">TenseMaster</h1>
+                            <div className="bg-amber-400 p-2 rounded-lg text-white"><Icons.Book /></div>
+                            <h1 className="font-bold text-xl text-amber-900">TenseMaster</h1>
                         </div>
-                        <div className="flex gap-4 items-center">
-                            <button onClick={() => setSoundEnabled(!soundEnabled)} className="p-2 hover:bg-amber-50 rounded-full">
-                                {soundEnabled ? <Icons.Volume2 /> : <Icons.VolumeX />}
-                            </button>
-                            {view !== 'home' && <button onClick={() => setView('home')} className="flex items-center gap-1 text-sm font-bold text-amber-700"><Icons.Home /> Trang chủ</button>}
-                        </div>
+                        {view !== 'home' && <button onClick={() => setView('home')} className="text-amber-700 font-medium flex items-center gap-1"><Icons.Home /> Trang chủ</button>}
                     </header>
 
-                    <main className="max-w-2xl mx-auto p-4 py-8">
+                    <main className="max-w-2xl mx-auto">
                         {view === 'home' && (
-                            <div className="space-y-8">
-                                <div className="text-center space-y-2">
-                                    <h2 className="text-3xl font-black">Chào mừng bạn! 👋</h2>
-                                    <p className="text-slate-500">Chọn bài thi để bắt đầu ôn luyện.</p>
+                            <div className="space-y-6">
+                                <div className="text-center py-6">
+                                    <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Chào mừng bạn! 👋</h2>
+                                    <p className="text-slate-500">Chọn bài tập để bắt đầu ôn luyện ngay.</p>
                                 </div>
                                 <div className="grid gap-4">
                                     {tests.map(test => (
-                                        <button key={test.id} onClick={() => startTest(test)} className="bg-white p-6 rounded-3xl border-2 border-amber-100 hover:border-amber-400 transition-all text-left flex justify-between items-center">
+                                        <button key={test.id} onClick={() => startTest(test)} className="bg-white p-6 rounded-3xl border-2 border-amber-100 hover:border-amber-400 transition-all text-left flex justify-between items-center group">
                                             <div>
-                                                <h3 className="font-bold text-lg">{test.title}</h3>
+                                                <h3 className="font-bold text-lg text-slate-800 group-hover:text-amber-600">{test.title}</h3>
                                                 <p className="text-sm text-slate-500">{test.description}</p>
                                             </div>
-                                            <Icons.ChevronRight />
+                                            <div className="text-amber-300 group-hover:text-amber-500"><Icons.ChevronRight /></div>
                                         </button>
                                     ))}
-                                    {wrongQuestionIds.length > 0 && (
-                                        <button onClick={startReviewTest} className="bg-rose-50 p-6 rounded-3xl border-2 border-rose-100 hover:border-rose-400 transition-all text-left flex justify-between items-center">
-                                            <div className="flex items-center gap-3">
-                                                <Icons.History />
-                                                <div>
+
+                                    {wrongIds.length > 0 && (
+                                        <button onClick={startReview} className="bg-rose-50 p-6 rounded-3xl border-2 border-rose-100 hover:border-rose-400 transition-all text-left flex justify-between items-center group">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <div className="text-rose-500"><Icons.History /></div>
                                                     <h3 className="font-bold text-lg text-rose-800">Ôn tập câu sai</h3>
-                                                    <p className="text-sm text-rose-600">{wrongQuestionIds.length} câu cần luyện lại.</p>
                                                 </div>
+                                                <p className="text-sm text-rose-600">Bạn đang có {wrongIds.length} câu cần luyện tập lại.</p>
                                             </div>
-                                            <Icons.ChevronRight />
+                                            <div className="text-rose-300 group-hover:text-rose-500"><Icons.ChevronRight /></div>
                                         </button>
                                     )}
                                 </div>
@@ -240,47 +240,32 @@
 
                         {view === 'test' && currentTest && (
                             <div className="space-y-6">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between text-xs font-bold text-amber-700 uppercase">
-                                        <span>{currentTest.title}</span>
-                                        <span>{currentQuestionIndex + 1} / {currentTest.questions.length}</span>
+                                <div className="bg-white p-6 md:p-8 rounded-[2rem] card-shadow border border-amber-50">
+                                    <div className="mb-6 flex justify-between items-center text-xs font-bold text-amber-600 uppercase tracking-widest">
+                                        <span>Câu {currentIdx + 1} / {currentTest.questions.length}</span>
+                                        <span className="bg-amber-100 px-2 py-1 rounded">{currentTest.questions[currentIdx].tense}</span>
                                     </div>
-                                    <div className="h-3 bg-amber-100 rounded-full overflow-hidden">
-                                        <div className="h-full bg-amber-400 transition-all duration-500" style={{ width: `${((currentQuestionIndex + 1) / currentTest.questions.length) * 100}%` }}></div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-amber-50 space-y-8">
-                                    <h3 className="text-xl font-bold leading-relaxed">{currentTest.questions[currentQuestionIndex].text}</h3>
+                                    <h3 className="text-xl font-bold text-slate-800 mb-8 leading-relaxed">{currentTest.questions[currentIdx].text}</h3>
                                     <div className="space-y-4">
-                                        {currentTest.questions[currentQuestionIndex].type === 'choice' ? (
+                                        {currentTest.questions[currentIdx].type === 'choice' ? (
                                             <div className="grid gap-3">
-                                                {currentTest.questions[currentQuestionIndex].options.map(opt => (
-                                                    <button key={opt} disabled={isAnswered} onClick={() => setUserAnswer(opt)} className={`p-4 rounded-2xl border-2 text-left font-medium transition-all ${userAnswer === opt ? 'border-amber-400 bg-amber-50 text-amber-900' : 'border-slate-100 hover:border-amber-200'} ${isAnswered && opt === currentTest.questions[currentQuestionIndex].correctAnswer ? 'border-emerald-400 bg-emerald-50 text-emerald-900' : ''}`}>
-                                                        {opt}
-                                                    </button>
+                                                {currentTest.questions[currentIdx].options.map(opt => (
+                                                    <button key={opt} disabled={isAnswered} onClick={() => setAnswer(opt)} className={`p-4 rounded-2xl border-2 text-left transition-all ${answer === opt ? 'border-amber-400 bg-amber-50' : 'border-slate-100'} ${isAnswered && opt === currentTest.questions[currentIdx].correctAnswer ? 'border-emerald-400 bg-emerald-50' : ''}`}>{opt}</button>
                                                 ))}
                                             </div>
                                         ) : (
-                                            <input type="text" value={userAnswer} disabled={isAnswered} onChange={e => setUserAnswer(e.target.value)} placeholder="Nhập đáp án..." className="w-full p-5 rounded-2xl border-2 border-amber-100 focus:border-amber-400 outline-none text-lg" onKeyDown={e => e.key === 'Enter' && handleAnswer()} />
+                                            <input type="text" value={answer} disabled={isAnswered} onChange={e => setAnswer(e.target.value)} placeholder="Nhập đáp án..." className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-amber-400 text-lg" onKeyDown={e => e.key === 'Enter' && handleCheck()} />
                                         )}
-
                                         {!isAnswered ? (
-                                            <button onClick={handleAnswer} disabled={!userAnswer.trim()} className="w-full py-4 bg-amber-400 hover:bg-amber-500 disabled:opacity-50 text-white font-bold rounded-2xl shadow-lg transition-all">Kiểm tra đáp án</button>
+                                            <button onClick={handleCheck} disabled={!answer.trim()} className="w-full py-4 bg-amber-400 text-white font-bold rounded-2xl shadow-lg hover:bg-amber-500 transition-all mt-4">Kiểm tra</button>
                                         ) : (
-                                            <div className={`p-6 rounded-2xl border-2 ${isCorrect ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}>
-                                                <div className="flex gap-3">
-                                                    <div className="mt-1">{isCorrect ? <Icons.Check /> : <Icons.X />}</div>
-                                                    <div className="space-y-2">
-                                                        <p className={`font-bold text-lg ${isCorrect ? 'text-emerald-800' : 'text-rose-800'}`}>{isCorrect ? 'Chính xác!' : `Sai rồi. Đáp án: ${currentTest.questions[currentQuestionIndex].correctAnswer}`}</p>
-                                                        <p className="text-sm text-slate-600 italic">{currentTest.questions[currentQuestionIndex].explanation}</p>
-                                                    </div>
+                                            <div className={`p-6 rounded-2xl border-2 mt-4 ${isCorrect ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}>
+                                                <div className="flex gap-3 mb-2">
+                                                    <div className={isCorrect ? 'text-emerald-500' : 'text-rose-500'}>{isCorrect ? <Icons.Check /> : <Icons.X />}</div>
+                                                    <p className="font-bold text-lg">{isCorrect ? 'Chính xác! 🎉' : `Sai rồi. Đáp án: ${currentTest.questions[currentIdx].correctAnswer}`}</p>
                                                 </div>
-                                                <button onClick={() => {
-                                                    if (currentQuestionIndex < currentTest.questions.length - 1) {
-                                                        setCurrentQuestionIndex(i => i + 1); setUserAnswer(''); setIsAnswered(false); setIsCorrect(null);
-                                                    } else { setView('result'); playSound('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'); }
-                                                }} className="mt-6 w-full py-3 bg-slate-800 text-white font-bold rounded-xl">Tiếp theo</button>
+                                                <p className="text-sm text-slate-600 italic mb-4">{currentTest.questions[currentIdx].explanation}</p>
+                                                <button onClick={next} className="w-full py-3 bg-slate-800 text-white font-bold rounded-xl flex justify-center items-center gap-2">Tiếp theo</button>
                                             </div>
                                         )}
                                     </div>
@@ -289,22 +274,14 @@
                         )}
 
                         {view === 'result' && (
-                            <div className="space-y-8 text-center">
-                                <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-amber-50 space-y-6">
-                                    <div className="inline-block p-4 bg-amber-100 rounded-full"><Icons.Trophy /></div>
-                                    <h2 className="text-3xl font-black">Hoàn thành!</h2>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
-                                            <p className="text-emerald-600 text-xs font-bold uppercase mb-1">Đúng</p>
-                                            <p className="text-3xl font-black text-emerald-700">{sessionStats.correct}</p>
-                                        </div>
-                                        <div className="bg-rose-50 p-6 rounded-3xl border border-rose-100">
-                                            <p className="text-rose-600 text-xs font-bold uppercase mb-1">Sai</p>
-                                            <p className="text-3xl font-black text-rose-700">{sessionStats.wrong}</p>
-                                        </div>
-                                    </div>
-                                    <button onClick={() => setView('home')} className="w-full py-4 bg-amber-400 text-white font-bold rounded-2xl shadow-lg">Quay lại trang chủ</button>
+                            <div className="text-center bg-white p-10 rounded-[3rem] card-shadow border border-amber-50">
+                                <div className="flex justify-center text-amber-500 mb-4"><Icons.Trophy /></div>
+                                <h2 className="text-3xl font-black mb-6 text-slate-900">Kết quả bài làm</h2>
+                                <div className="grid grid-cols-2 gap-4 mb-8">
+                                    <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100"><p className="text-emerald-600 text-xs font-bold mb-1">ĐÚNG</p><p className="text-3xl font-black text-emerald-700">{stats.correct}</p></div>
+                                    <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100"><p className="text-rose-600 text-xs font-bold mb-1">SAI</p><p className="text-3xl font-black text-rose-700">{stats.wrong}</p></div>
                                 </div>
+                                <button onClick={() => setView('home')} className="w-full py-4 bg-amber-400 text-white font-bold rounded-2xl shadow-lg hover:bg-amber-500 transition-all">Quay lại trang chủ</button>
                             </div>
                         )}
                     </main>
@@ -312,7 +289,8 @@
             );
         }
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
